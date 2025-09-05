@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP 스마트 To-Do List</title>
+    
+    <!-- 외부 CSS 라이브러리 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- 커스텀 CSS -->
+    <link rel="stylesheet" href="./smart-todo-styles.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- 앱 헤더 -->
+        <div class="app-header">
+            <h1>
+                <i class="fas fa-brain"></i>
+                MCP 스마트 To-Do List
+            </h1>
+            <p class="app-subtitle">Sequential Thinking과 MCP 연결을 활용한 지능형 할일 관리 시스템</p>
+            
+            <div class="productivity-stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalTasksCount">0</span>
+                    <span class="stat-label">전체 할일</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="completedTasksCount">0</span>
+                    <span class="stat-label">완료된 할일</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="completionRatePercent">0%</span>
+                    <span class="stat-label">완료율</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="pendingTasksCount">0</span>
+                    <span class="stat-label">대기 중</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메인 콘텐츠 그리드 -->
+        <div class="content-grid">
+            <!-- 할일 관리 섹션 -->
+            <div class="todo-main-section">
+                <h2 class="section-header">
+                    <i class="fas fa-plus-circle"></i>
+                    새로운 할일 추가
+                </h2>
+                
+                <!-- 할일 생성 폼 -->
+                <div class="todo-creation-form">
+                    <form id="todoCreationForm">
+                        <div class="form-group">
+                            <label for="todoTitleInput" class="form-label">할일 제목 *</label>
+                            <input type="text" id="todoTitleInput" class="form-input" placeholder="할일을 입력하세요..." required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="todoDescriptionInput" class="form-label">상세 설명</label>
+                            <textarea id="todoDescriptionInput" class="form-input" rows="4" placeholder="상세 설명을 입력하세요..."></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="todoPrioritySelect" class="form-label">우선순위</label>
+                                <select id="todoPrioritySelect" class="form-input">
+                                    <option value="low">낮음</option>
+                                    <option value="medium" selected>보통</option>
+                                    <option value="high">높음</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="todoCategorySelect" class="form-label">카테고리</label>
+                                <select id="todoCategorySelect" class="form-input">
+                                    <option value="업무">업무</option>
+                                    <option value="개인">개인</option>
+                                    <option value="학습">학습</option>
+                                    <option value="프로젝트">프로젝트</option>
+                                    <option value="기타" selected>기타</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="todoEstimatedTimeInput" class="form-label">예상 시간 (분)</label>
+                                <input type="number" id="todoEstimatedTimeInput" class="form-input" placeholder="60" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="todoDueDateInput" class="form-label">마감일</label>
+                            <input type="datetime-local" id="todoDueDateInput" class="form-input">
+                        </div>
+                        
+                        <button type="submit" class="primary-button">
+                            <i class="fas fa-plus"></i>
+                            할일 추가하기
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 할일 목록 섹션 -->
+                <h2 class="section-header">
+                    <i class="fas fa-list-check"></i>
+                    할일 목록
+                </h2>
+                
+                <!-- 필터 버튼들 -->
+                <div class="filter-buttons">
+                    <button class="filter-button active" data-filter="all">전체 보기</button>
+                    <button class="filter-button" data-filter="pending">대기 중</button>
+                    <button class="filter-button" data-filter="in_progress">진행 중</button>
+                    <button class="filter-button" data-filter="completed">완료됨</button>
+                    <button class="filter-button" data-filter="high">높은 우선순위</button>
+                </div>
+                
+                <!-- 할일 목록 컨테이너 -->
+                <div id="todoListContainer" class="todo-list-container">
+                    <div class="loading-indicator">
+                        <div class="loading-spinner"></div>
+                        할일 목록을 불러오는 중...
+                    </div>
+                </div>
+            </div>
+
+            <!-- 분석 사이드바 -->
+            <div class="analytics-sidebar">
+                <h2 class="section-header">
+                    <i class="fas fa-chart-line"></i>
+                    스마트 분석
+                </h2>
+                
+                <!-- 추천 패널 -->
+                <div id="recommendationsContainer" class="recommendations-panel">
+                    <div class="loading-indicator">
+                        <div class="loading-spinner"></div>
+                        추천 사항 분석 중...
+                    </div>
+                </div>
+                
+                <!-- 생산성 지표 -->
+                <h3 class="section-header">
+                    <i class="fas fa-tachometer-alt"></i>
+                    생산성 지표
+                </h3>
+                
+                <div id="productivityContainer">
+                    <div class="loading-indicator">
+                        <div class="loading-spinner"></div>
+                        생산성 데이터 수집 중...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GitHub Pages용 정적 JavaScript -->
+    <script src="./github-pages-todo.js" defer></script>
+</body>
+</html>
